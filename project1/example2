@@ -1,0 +1,32 @@
+pipeline {
+  agent {
+    // using agent machine call by lable
+    label 'ciserver'
+  }
+  options {
+     // Timeout counter starts AFTER agent is allocated
+     timeout(time: 60, unit: 'SECONDS')
+  }
+  environment { 
+    CONTAINERIMAGE = 'nginx:latest'
+    }
+
+  stages {
+    stage("PullImage"){
+        steps{
+            sh 'docker pull $CONTAINERIMAGE'
+        }
+    }
+
+    stage('KillOldContainer'){
+        steps{
+            sh 'docker rm -f serverci1'
+        }
+    }
+    stage("BulidContainer"){
+        steps{
+            sh 'docker run -dit --name serverci1 $CONTAINERIMAGE'
+        }
+    }
+  }  
+}

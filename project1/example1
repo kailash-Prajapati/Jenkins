@@ -1,0 +1,30 @@
+pipeline { 
+  agent {
+    // using agent manchine call by label  
+    label 'ciserver' 
+  }
+  options {
+    // Timeout counter starts AFTER agent is allocated
+    timeout(time: 60, unit: 'SECONDS')
+  } 
+
+  stages {
+    stage("PullImages"){
+        steps{
+            sh 'docker pull httpd:latest'
+        }
+    }
+
+    stage('KillOldContainer') { 
+        steps{
+            sh 'docker rm -f serverci1'
+        }
+    }
+    
+    stage("BuildContainer"){
+        steps{
+            sh 'docker run -dit --name serverci1 httpd:latest'
+        }
+    }
+  }  
+}

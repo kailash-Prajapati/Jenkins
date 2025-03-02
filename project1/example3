@@ -1,0 +1,41 @@
+pipeline {
+  agent {
+    // using agent machine call by lable
+    label 'ciserver'
+  }
+  options {
+     // Timeout counter starts AFTER agent is allocated
+     timeout(time: 60, unit: 'SECONDS')
+  }
+  environment { 
+    CONTAINERIMAGE = 'nginx:latest'
+    }
+
+  parameters {
+        string(name: 'ContainerName', defaultValue: 'serverci', description: 'Define Container name')
+
+        string(name: 'ContainerPort', defaultValue: '8080', description: 'Define Container Expose Port')
+
+        choice(name: 'ContainerImage', choices: ['httpd', 'ngnix'], description: 'Pick Your Container Image')
+
+    }  
+
+  stages {
+    stage("PullImage"){
+        steps{
+            sh "docker pull ${params.ContainerImage}"
+        }
+    }
+
+    stage('KillOldContainer'){
+        steps{
+            sh "docker rm -f ${params.ContainerName}"
+        }
+    }
+    stage("BulidContainer"){
+        steps{
+            sh "docker run -dit --name ${params.ContainerName} -p${params.ContainerPort}:80 ${params.ContainerImage}"
+        }
+    }
+  }  
+}
