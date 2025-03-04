@@ -1,4 +1,8 @@
-Name: <input type="text" name="name" value="<?php echo $name;?>">
+FullName: <input type="text" name="fname" value="<?php echo $fname;?>">
+
+LastName: <input type="text" name="lname" value="<?php echo $lname;?>">
+
+FullName: <input type="text" name="fullname" value="<?php echo $fullname;?>">
 
 E-mail: <input type="text" name="email" value="<?php echo $email;?>">
 
