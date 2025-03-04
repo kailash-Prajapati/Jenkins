@@ -1,0 +1,30 @@
+pipeline { 
+  agent {
+    // using agent manchine call by label  
+    label 'phpdev' 
+  }
+  options {
+    // Timeout counter starts AFTER agent is allocated
+    timeout(time: 60, unit: 'SECONDS')
+  } 
+
+  stages {
+    stage("CodeCheckout"){
+        steps{
+            git branch: 'phpdevelopment', url: 'https://github.com/kailash-Prajapati/Jenkins.git'
+        }
+    }
+
+    stage('PHPCodeDeploy') { 
+        steps{
+            sh "sudo cp -r /home/ec2-user/jenkins/phpdevelopment/src/* /var/www/html/"
+        }
+    }
+    
+    stage("RestartServer"){
+        steps{
+            sh 'sudo sysytemctl restart httpd'
+        }
+    }
+  }  
+}
