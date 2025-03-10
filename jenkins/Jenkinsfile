@@ -18,7 +18,7 @@ pipeline {
         }
         stage('Sonarqube Analysis ') {
             steps {
-                dir('src') {
+                dir('terraform/') {
                     withSonarQubeEnv('sonar-server') {
                         sh ''' $SCANNER_HOME/bin/sonar-scanner \
                         -Dsonar.projectName=terraform-ci-secure \
@@ -36,7 +36,7 @@ pipeline {
         }
         stage('OWASP Scan') {
             steps {
-                dir('src/') {
+                dir('terraform/') {
                     dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit', odcInstallation: 'DP-check'
                     dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
                 }
