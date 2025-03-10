@@ -13,7 +13,7 @@ pipeline {
         }
         stage('Checkout from Git') {
             steps {
-                git url:'https://github.com/kailash-Prajapati/Jenkins.git', branch:'dockerci'
+                git url:'https://github.com/kailash-Prajapati/Jenkins.git', branch:'terraformdeploy'
             }
         }
         stage('Sonarqube Analysis ') {
@@ -21,8 +21,8 @@ pipeline {
                 dir('src') {
                     withSonarQubeEnv('sonar-server') {
                         sh ''' $SCANNER_HOME/bin/sonar-scanner \
-                        -Dsonar.projectName=docker-ci-project \
-                        -Dsonar.projectKey=docker-ci-project '''
+                        -Dsonar.projectName=terraform-ci-secure \
+                        -Dsonar.projectKey=terraform-ci-secure '''
                     }
                 }
             }
@@ -42,36 +42,29 @@ pipeline {
                 }
             }
         }
-        stage('TrivyFScan') {
-            steps {
-                dir('src/') {
-                    sh 'trivy fs . > trivyfs.txt'
-                }
-            }
-        }
-        stage("Image Create") {
-            steps {
-                script {
-                    sh 'docker build -t dockerci .'
 
-                }
+        stage("terraform Init"){
+          steps { 
+                dir('terraform/') {
+                    sh 'terraform init'
+                }     
             }
         }
-        // stage("ImagePush") {
-        //     steps {
-        //         script {
-        //             withCredentials([usernamePassword(credentialsId: 'docker-repo-creds', usernameVariable: 'docker_user', passwordVariable: 'docker_pass')]) {
-        //             sh "docker tag finexo ${env.docker_user}/finexo:${BUILD_NUMBER}"
-        //             sh "docker login -u ${env.docker_user} -p ${env.docker_pass}"
-        //             sh "docker push ${env.docker_user}/finexo:${BUILD_NUMBER}"
-        //             }
-        //         }
-        //     }
-        // }
-        // stage("ImageScan") {
-        //     steps {
-        //         sh 'trivy image prateekkumawat/finexo:${BUILD_NUMBER} > trivyimage_${BUILD_NUMBER}.txt' 
-        //     }
-        // }
+
+      stage("terraform plan"){
+            steps {
+                dir('terraform/') {
+                    sh 'terraform plan'
+               }   
+            }
+        } 
+
+      stage("terraform apply") { 
+            steps { 
+                dir('terraform/') {
+                    sh 'terraform apply --auto-approve'
+                } 
+            }
+        }          
     }
 }
