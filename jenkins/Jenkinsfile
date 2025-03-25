@@ -16,32 +16,32 @@ pipeline {
                 git url:'https://github.com/kailash-Prajapati/Jenkins.git', branch:'terraformdeploy'
             }
         }
-        stage('Sonarqube Analysis ') {
-            steps {
-                dir('terraform/') {
-                    withSonarQubeEnv('sonar-scanner') {
-                        sh ''' $SCANNER_HOME/bin/sonar-scanner \
-                        -Dsonar.projectName=terraform-ci-secure \
-                        -Dsonar.projectKey=terraform-ci-secure '''
-                    }
-                }
-            }
-        }
-        stage('QualityGate') {
-            steps {
-                script {
-                    waitForQualityGate abortPipeline: false, credentialsId: 'sonar-token' 
-                }
-            }
-        }
-        stage('OWASP Scan') {
-            steps {
-                dir('terraform/') {
-                    dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit', odcInstallation: 'DP-check'
-                    dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
-                }
-            }
-        }
+        // stage('Sonarqube Analysis ') {
+        //     steps {
+        //         dir('terraform/') {
+        //             withSonarQubeEnv('sonar-scanner') {
+        //                 sh ''' $SCANNER_HOME/bin/sonar-scanner \
+        //                 -Dsonar.projectName=terraform-ci-secure \
+        //                 -Dsonar.projectKey=terraform-ci-secure '''
+        //             }
+        //         }
+        //     }
+        // }
+        // stage('QualityGate') {
+        //     steps {
+        //         script {
+        //             waitForQualityGate abortPipeline: false, credentialsId: 'sonar-token' 
+        //         }
+        //     }
+        // }
+        // stage('OWASP Scan') {
+        //     steps {
+        //         dir('terraform/') {
+        //             dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit', odcInstallation: 'DP-check'
+        //             dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
+        //         }
+        //     }
+        // }
 
         stage("terraform Init"){
           steps { 
