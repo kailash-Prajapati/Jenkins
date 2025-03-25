@@ -2,8 +2,9 @@ pipeline {
     agent {
         label 'devops'
     }
-    environment  {
-        SCANNER_HOME=tool 'sonar-scanner'
+    environment {
+        SCANNER_HOME = tool 'sonar-scanner'
+        TF_IN_AUTOMATION = '1'  // Prevent Terraform from prompting
     }
     stages {
         stage('Cleaning Workspace') {
@@ -13,20 +14,26 @@ pipeline {
         }
         stage('Checkout from Git') {
             steps {
-                git url:'https://github.com/kailash-Prajapati/Jenkins.git', branch:'terraformdeploy'
+                git url: 'https://github.com/kailash-Prajapati/Jenkins.git', branch: 'terraformdeploy'
             }
         }
-        // stage('Sonarqube Analysis ') {
+
+        // // Uncomment these if SonarQube analysis is needed
+        // /*
+        // stage('Sonarqube Analysis') {
         //     steps {
         //         dir('terraform/') {
         //             withSonarQubeEnv('sonar-scanner') {
-        //                 sh ''' $SCANNER_HOME/bin/sonar-scanner \
+        //                 sh '''
+        //                 $SCANNER_HOME/bin/sonar-scanner \
         //                 -Dsonar.projectName=terraform-ci-secure \
-        //                 -Dsonar.projectKey=terraform-ci-secure '''
+        //                 -Dsonar.projectKey=terraform-ci-secure
+        //                 '''
         //             }
         //         }
         //     }
         // }
+
         // stage('QualityGate') {
         //     steps {
         //         script {
@@ -34,6 +41,7 @@ pipeline {
         //         }
         //     }
         // }
+
         // stage('OWASP Scan') {
         //     steps {
         //         dir('terraform/') {
@@ -42,29 +50,38 @@ pipeline {
         //         }
         //     }
         // }
+        
 
-        stage("terraform Init"){
-          steps { 
+        stage('Terraform Init') {
+            steps {
                 dir('terraform/') {
                     sh 'terraform init'
-                }     
+                }
             }
         }
 
-      stage("terraform plan"){
+        stage('Terraform Plan') {
             steps {
                 dir('terraform/') {
                     sh 'terraform plan'
-               }   
+                }
             }
-        } 
+        }
 
-      stage("terraform apply") { 
-            steps { 
+        stage('Terraform Apply') {
+            steps {
                 dir('terraform/') {
                     sh 'terraform apply --auto-approve'
-                } 
+                }
             }
-        }          
+        }
+
+        stage('Terraform Destroy') {  // Fixed stage name and syntax
+            steps {
+                dir('terraform/') {
+                    sh 'terraform destroy --auto-approve'  // Fixed command
+                }
+            }
+        }
     }
 }
