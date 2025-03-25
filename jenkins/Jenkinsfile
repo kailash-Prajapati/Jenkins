@@ -19,7 +19,7 @@ pipeline {
         stage('Sonarqube Analysis ') {
             steps {
                 dir('terraform/') {
-                    withSonarQubeEnv('sonar-server') {
+                    withSonarQubeEnv('sonar-scanner') {
                         sh ''' $SCANNER_HOME/bin/sonar-scanner \
                         -Dsonar.projectName=terraform-ci-secure \
                         -Dsonar.projectKey=terraform-ci-secure '''
