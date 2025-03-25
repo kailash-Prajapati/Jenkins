@@ -76,10 +76,10 @@ pipeline {
         //     }
         // }
 
-        stage('Terraform Destroy') {  // Fixed stage name and syntax
+        stage('Terraform Destroy') {  
             steps {
                 dir('terraform/') {
-                    sh 'terraform destroy --auto-approve'  // Fixed command
+                    sh 'terraform destroy'  
                 }
             }
         }
